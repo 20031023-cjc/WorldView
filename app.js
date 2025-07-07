@@ -1,4 +1,4 @@
-// 🌐 多语言定义
+// 🌐 
 let currentLang = localStorage.getItem("language") || "en";
 
 const i18n = {
