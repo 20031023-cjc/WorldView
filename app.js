@@ -16,6 +16,11 @@ const i18n = {
     zh: "搜索",
     ja: "検索",
   },
+  useLocation: {
+    en: "📍 Use My Location",
+    zh: "📍 使用当前位置",
+    ja: "📍 現在地を使う",
+  },
   weatherTitle: {
     en: "Weather in",
     zh: "天气：",
@@ -81,7 +86,7 @@ async function getWeather() {
       <p>🌡 ${temperature}°C, ${condition}</p>
     `;
 
-    // 🎌 获取文化信息（REST Countries API）
+    // 文化信息
     const countryUrl = `https://restcountries.com/v3.1/alpha/${countryCode}`;
     const countryResponse = await fetch(countryUrl);
     const countryData = await countryResponse.json();
@@ -90,38 +95,13 @@ async function getWeather() {
     const language = Object.values(country.languages).join(", ");
     const countryName = country.name.common;
 
-    // 🎯 自定义文化模板
     const cultureTemplates = {
-      JP: {
-        food: "Sushi 🍣",
-        greeting: "こんにちは",
-        etiquette: "Bowing 🙇‍♂️",
-      },
-      CN: {
-        food: "Dumplings 🥟",
-        greeting: "你好",
-        etiquette: "Respect with both hands 🤲",
-      },
-      US: {
-        food: "Burger 🍔",
-        greeting: "Hello",
-        etiquette: "Handshake 🤝",
-      },
-      FR: {
-        food: "Baguette 🥖",
-        greeting: "Bonjour",
-        etiquette: "Cheek kissing 👋",
-      },
-      KR: {
-        food: "Kimchi 🥬",
-        greeting: "안녕하세요",
-        etiquette: "Two hands for everything 🙇",
-      },
-      TH: {
-        food: "Pad Thai 🍜",
-        greeting: "สวัสดีครับ/ค่ะ",
-        etiquette: "Wai greeting 🙏",
-      },
+      JP: { food: "Sushi 🍣", greeting: "こんにちは", etiquette: "Bowing 🙇‍♂️" },
+      CN: { food: "Dumplings 🥟", greeting: "你好", etiquette: "Respect with both hands 🤲" },
+      US: { food: "Burger 🍔", greeting: "Hello", etiquette: "Handshake 🤝" },
+      FR: { food: "Baguette 🥖", greeting: "Bonjour", etiquette: "Cheek kissing 👋" },
+      KR: { food: "Kimchi 🥬", greeting: "안녕하세요", etiquette: "Two hands for everything 🙇" },
+      TH: { food: "Pad Thai 🍜", greeting: "สวัสดีครับ/ค่ะ", etiquette: "Wai greeting 🙏" },
     };
 
     const culture = cultureTemplates[countryCode] || {
@@ -145,9 +125,8 @@ async function getWeather() {
   }
 }
 
-// 🌍 初始化地图
+// 初始化地图
 const map = L.map('map').setView([20, 0], 2);
-
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: 'Map data © OpenStreetMap contributors',
 }).addTo(map);
@@ -162,10 +141,7 @@ map.on('click', async function (e) {
     );
     const data = await response.json();
     const city =
-      data.address.city ||
-      data.address.town ||
-      data.address.village ||
-      data.address.state;
+      data.address.city || data.address.town || data.address.village || data.address.state;
 
     if (city) {
       document.getElementById("cityInput").value = city;
@@ -178,7 +154,45 @@ map.on('click', async function (e) {
   }
 });
 
-// 语言切换按钮监听
+// 使用定位功能获取天气
+async function getLocationWeather() {
+  if (!navigator.geolocation) {
+    alert("Geolocation is not supported by your browser.");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(async (position) => {
+    const lat = position.coords.latitude;
+    const lon = position.coords.longitude;
+
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`
+      );
+      const data = await response.json();
+      const city =
+        data.address.city || data.address.town || data.address.village || data.address.state;
+
+      if (city) {
+        document.getElementById("cityInput").value = city;
+        getWeather();
+        if (typeof map !== "undefined") {
+          map.setView([lat, lon], 8);
+          L.marker([lat, lon]).addTo(map);
+        }
+      } else {
+        alert("Could not determine city from location.");
+      }
+    } catch (error) {
+      console.error("Reverse geocoding failed", error);
+      alert("Failed to retrieve location data.");
+    }
+  }, () => {
+    alert("Unable to retrieve your location.");
+  });
+}
+
+// 多语言切换
 document.querySelectorAll(".language-switch button").forEach((btn) => {
   btn.addEventListener("click", () => {
     const lang = btn.getAttribute("data-lang");
@@ -188,129 +202,17 @@ document.querySelectorAll(".language-switch button").forEach((btn) => {
   });
 });
 
-// 翻译函数：应用当前语言到页面上
+// 多语言应用函数
 function applyTranslations() {
   document.title = i18n.title[currentLang];
   document.querySelector("h1").textContent = i18n.title[currentLang];
   document.getElementById("cityInput").placeholder = i18n.inputPlaceholder[currentLang];
   document.querySelector(".search-box button").textContent = i18n.search[currentLang];
+  const locationBtn = document.getElementById("useLocationBtn");
+  if (locationBtn) {
+    locationBtn.textContent = i18n.useLocation[currentLang];
+  }
 }
 
-// 页面首次加载时应用语言
+// 初始化语言
 applyTranslations();
-async function getLocationWeather() {
-  if (!navigator.geolocation) {
-    alert("Geolocation is not supported by your browser.");
-    return;
-  }
-
-  navigator.geolocation.getCurrentPosition(async (position) => {
-    const lat = position.coords.latitude;
-    const lon = position.coords.longitude;
-
-    try {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`
-      );
-      const data = await response.json();
-      const city =
-        data.address.city ||
-        data.address.town ||
-        data.address.village ||
-        data.address.state;
-
-      if (city) {
-        document.getElementById("cityInput").value = city;
-        getWeather();
-      } else {
-        alert("Could not determine your location.");
-      }
-    } catch (error) {
-      console.error("Location fetch failed", error);
-    }
-  });
-}
-
-async function getLocationWeather() {
-  if (!navigator.geolocation) {
-    alert("Geolocation is not supported by your browser.");
-    return;
-  }
-
-  navigator.geolocation.getCurrentPosition(async (position) => {
-    const lat = position.coords.latitude;
-    const lon = position.coords.longitude;
-
-    try {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`
-      );
-      const data = await response.json();
-      const city =
-        data.address.city ||
-        data.address.town ||
-        data.address.village ||
-        data.address.state;
-
-      if (city) {
-        document.getElementById("cityInput").value = city;
-        getWeather();
-
-        // 地图跳过去并标记
-        if (typeof map !== "undefined") {
-          map.setView([lat, lon], 8);
-          L.marker([lat, lon]).addTo(map);
-        }
-      } else {
-        alert("Could not determine city from location.");
-      }
-    } catch (error) {
-      console.error("Reverse geocoding failed", error);
-      alert("Failed to retrieve location data.");
-    }
-  }, () => {
-    alert("Unable to retrieve your location.");
-  });
-}
-
-async function getLocationWeather() {
-  if (!navigator.geolocation) {
-    alert("Geolocation is not supported by your browser.");
-    return;
-  }
-
-  navigator.geolocation.getCurrentPosition(async (position) => {
-    const lat = position.coords.latitude;
-    const lon = position.coords.longitude;
-
-    try {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`
-      );
-      const data = await response.json();
-      const city =
-        data.address.city ||
-        data.address.town ||
-        data.address.village ||
-        data.address.state;
-
-      if (city) {
-        document.getElementById("cityInput").value = city;
-        getWeather();
-
-        // 地图跳转到当前位置并加标记
-        if (typeof map !== "undefined") {
-          map.setView([lat, lon], 8);
-          L.marker([lat, lon]).addTo(map);
-        }
-      } else {
-        alert("Could not determine city from location.");
-      }
-    } catch (error) {
-      console.error("Reverse geocoding failed", error);
-      alert("Failed to retrieve location data.");
-    }
-  }, () => {
-    alert("Unable to retrieve your location.");
-  });
-}
