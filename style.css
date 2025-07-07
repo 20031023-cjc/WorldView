@@ -2,16 +2,16 @@ body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
   padding: 0;
-  background: linear-gradient(to bottom, #dbeafe, #93c5fd);
-  color: #1e293b;
+  background: linear-gradient(to bottom, #fdf6ec, #faeee7);
+  color: #4b2e1e;
   text-align: center;
 }
 
 header {
-  background: linear-gradient(to right, #1e3a8a, #2563eb);
-  color: white;
+  background: linear-gradient(to right, #f3d5b5, #e7bb94);
+  color: #4b2e1e;
   padding: 1.5rem 1rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 header h1 {
@@ -30,15 +30,16 @@ header h1 {
   font-weight: bold;
   border: none;
   border-radius: 8px;
-  background-color: #3b82f6;
-  color: white;
+  background-color: #f1c27b;
+  color: #fffaf5;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.1s ease;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
 }
 
 .language-switch button:hover {
-  background-color: #2563eb;
-  transform: translateY(-2px);
+  background-color: #e0a96d;
+  transform: scale(1.05);
 }
 
 .search-box {
@@ -53,16 +54,18 @@ header h1 {
 .search-box input[type="text"] {
   padding: 10px 14px;
   font-size: 1rem;
-  border: 1px solid #ccc;
+  border: 1px solid #ddd0c8;
   border-radius: 8px;
   width: 250px;
   max-width: 80%;
-  transition: box-shadow 0.2s ease;
+  background-color: #fffaf5;
+  transition: box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
 .search-box input[type="text"]:focus {
   outline: none;
-  box-shadow: 0 0 0 2px #60a5fa;
+  background-color: #fff3e6;
+  box-shadow: 0 0 0 3px #ffd7b5;
 }
 
 .search-box button {
@@ -71,47 +74,51 @@ header h1 {
   font-weight: bold;
   border: none;
   border-radius: 8px;
-  background-color: #3b82f6;
-  color: white;
+  background-color: #f5c89c;
+  color: #4b2e1e;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.1s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
 }
 
 .search-box button:hover {
-  background-color: #2563eb;
-  transform: translateY(-2px);
+  background-color: #f1b97e;
+  transform: scale(1.05);
 }
 
 #map {
   height: 420px;
   margin: 30px auto;
   max-width: 680px;
-  border-radius: 12px;
+  border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.2);
 }
 
-#weatherInfo, #cultureInfo {
-  margin: 1.8rem auto;
-  padding: 1.5rem;
-  background: white;
-  border-radius: 12px;
+#weatherInfo,
+#cultureInfo {
+  margin: 2rem auto;
+  padding: 1.8rem;
+  background: #fffefc;
+  border-radius: 16px;
   max-width: 680px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
   text-align: left;
-  line-height: 1.6;
+  line-height: 1.7;
   font-size: 1rem;
+  color: #4b2e1e;
 }
 
 #weatherInfo h2,
 #cultureInfo h3 {
-  color: #1e3a8a;
+  color: #b45f06;
 }
 
 footer {
   margin-top: 3rem;
   padding: 1rem;
-  color: #64748b;
+  background: #f9f1e7;
+  color: #7c5c4b;
   font-size: 0.9rem;
 }
 
