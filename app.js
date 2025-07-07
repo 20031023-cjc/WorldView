@@ -1,3 +1,58 @@
+let currentLang = localStorage.getItem("language") || "en";
+
+const i18n = {
+  title: {
+    en: "WorldView",
+    zh: "世界视图",
+    ja: "ワールドビュー",
+  },
+  inputPlaceholder: {
+    en: "Enter city name",
+    zh: "输入城市名称",
+    ja: "都市名を入力",
+  },
+  search: {
+    en: "Search",
+    zh: "搜索",
+    ja: "検索",
+  },
+  weatherTitle: {
+    en: "Weather in",
+    zh: "天气：",
+    ja: "天気：",
+  },
+  culturalInfo: {
+    en: "Cultural Info",
+    zh: "文化信息",
+    ja: "文化情報",
+  },
+  languageLabel: {
+    en: "Official Language(s):",
+    zh: "官方语言：",
+    ja: "公用語：",
+  },
+  food: {
+    en: "Famous Food:",
+    zh: "代表食物：",
+    ja: "名物料理：",
+  },
+  greeting: {
+    en: "Greeting:",
+    zh: "问候语：",
+    ja: "あいさつ：",
+  },
+  etiquette: {
+    en: "Etiquette:",
+    zh: "礼仪：",
+    ja: "マナー：",
+  },
+  error: {
+    en: "⚠️ Could not fetch weather data.",
+    zh: "⚠️ 无法获取天气信息。",
+    ja: "⚠️ 天気情報を取得できませんでした。",
+  },
+};
+
 async function getWeather() {
   const city = document.getElementById("cityInput").value;
   const weatherInfo = document.getElementById("weatherInfo");
