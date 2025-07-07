@@ -35,11 +35,53 @@ async function getWeather() {
     const language = Object.values(country.languages).join(", ");
     const countryName = country.name.common;
 
+    // 🎯 自定义文化模板
+    const cultureTemplates = {
+      JP: {
+        food: "Sushi 🍣",
+        greeting: "こんにちは",
+        etiquette: "Bowing 🙇‍♂️",
+      },
+      CN: {
+        food: "Dumplings 🥟",
+        greeting: "你好",
+        etiquette: "Respect with both hands 🤲",
+      },
+      US: {
+        food: "Burger 🍔",
+        greeting: "Hello",
+        etiquette: "Handshake 🤝",
+      },
+      FR: {
+        food: "Baguette 🥖",
+        greeting: "Bonjour",
+        etiquette: "Cheek kissing 👋",
+      },
+      KR: {
+        food: "Kimchi 🥬",
+        greeting: "안녕하세요",
+        etiquette: "Two hands for everything 🙇",
+      },
+      TH: {
+        food: "Pad Thai 🍜",
+        greeting: "สวัสดีครับ/ค่ะ",
+        etiquette: "Wai greeting 🙏",
+      },
+    };
+
+    const culture = cultureTemplates[countryCode] || {
+      food: "N/A",
+      greeting: "N/A",
+      etiquette: "N/A",
+    };
+
     cultureInfo.innerHTML = `
       <h3>🌍 Cultural Info: ${countryName}</h3>
       <img src="${flag}" alt="Flag of ${countryName}" style="width: 100px; margin: 10px 0;" />
       <p><strong>Official Language(s):</strong> ${language}</p>
-      <p><em>More cultural info coming soon!</em></p>
+      <p><strong>Famous Food:</strong> ${culture.food}</p>
+      <p><strong>Greeting:</strong> ${culture.greeting}</p>
+      <p><strong>Etiquette:</strong> ${culture.etiquette}</p>
     `;
   } catch (error) {
     weatherInfo.innerHTML = "⚠️ Could not fetch weather data.";
