@@ -53,6 +53,9 @@ async function getWeather(city = null, lat = null, lon = null) {
     return;
   }
 
+  showLoading();  // 加载动画开始
+  saveSearch(city);  // 保存搜索记录
+
   const apiKey = "d0c82cf6ceae567537e0079215ab67dd";
   const url = lat && lon
     ? `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`
@@ -78,6 +81,7 @@ async function getWeather(city = null, lat = null, lon = null) {
       <h2>${i18n.weatherTitle[currentLang]} ${city}</h2>
       <img src="${iconUrl}" alt="${condition}" />
       <p>🌡 ${temperature}°C, ${condition}</p>
+      <p>📌 Latitude: ${latUsed.toFixed(2)}, Longitude: ${lonUsed.toFixed(2)}</p>
     `;
 
     const countryRes = await fetch(`https://restcountries.com/v3.1/alpha/${countryCode}`);
@@ -110,6 +114,8 @@ async function getWeather(city = null, lat = null, lon = null) {
     weatherInfo.innerHTML = i18n.error[currentLang];
     cultureInfo.innerHTML = "";
     console.error(err);
+  } finally {
+    hideLoading();  // 加载动画结束
   }
 }
 
@@ -167,7 +173,6 @@ function applyTranslations() {
   buttons[1].textContent = i18n.useLocation[currentLang];
   highlightActiveLanguage();
 
-  // 自动刷新当前结果
   if (document.getElementById("weatherInfo").innerHTML) {
     const city = document.getElementById("cityInput").value;
     getWeather(city);
@@ -175,3 +180,55 @@ function applyTranslations() {
 }
 
 applyTranslations();
+renderSearchHistory();
+
+
+// ===================== 🌗 夜间模式切换 =====================
+document.getElementById("toggleMode").addEventListener("click", () => {
+  document.body.classList.toggle("dark");
+});
+
+// ===================== 🌀 Loading 动画控制 =====================
+function showLoading() {
+  document.getElementById("loading").classList.remove("hidden");
+}
+function hideLoading() {
+  document.getElementById("loading").classList.add("hidden");
+}
+
+// ===================== 🧠 最近搜索记录功能 =====================
+function saveSearch(cityName) {
+  let history = JSON.parse(localStorage.getItem("searchHistory") || "[]");
+  history = [cityName, ...history.filter(c => c !== cityName)];
+  if (history.length > 5) history.length = 5;
+  localStorage.setItem("searchHistory", JSON.stringify(history));
+  renderSearchHistory();
+}
+
+function renderSearchHistory() {
+  const container = document.getElementById("recentSearches");
+  if (!container) return;
+
+  const history = JSON.parse(localStorage.getItem("searchHistory") || "[]");
+  if (history.length === 0) {
+    container.innerHTML = "";
+    return;
+  }
+
+  container.innerHTML = `<h3>🔁 Recent Searches</h3>`;
+  const ul = document.createElement("ul");
+  ul.style.listStyle = "none";
+  ul.style.padding = 0;
+
+  history.forEach(city => {
+    const li = document.createElement("li");
+    li.innerHTML = `<button class="history-btn">${city}</button>`;
+    li.querySelector("button").onclick = () => {
+      document.getElementById("cityInput").value = city;
+      getWeather(city);
+    };
+    ul.appendChild(li);
+  });
+
+  container.appendChild(ul);
+}
