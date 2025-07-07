@@ -231,3 +231,44 @@ async function getLocationWeather() {
   });
 }
 
+async function getLocationWeather() {
+  if (!navigator.geolocation) {
+    alert("Geolocation is not supported by your browser.");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(async (position) => {
+    const lat = position.coords.latitude;
+    const lon = position.coords.longitude;
+
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`
+      );
+      const data = await response.json();
+      const city =
+        data.address.city ||
+        data.address.town ||
+        data.address.village ||
+        data.address.state;
+
+      if (city) {
+        document.getElementById("cityInput").value = city;
+        getWeather();
+
+        // 地图跳过去并标记
+        if (typeof map !== "undefined") {
+          map.setView([lat, lon], 8);
+          L.marker([lat, lon]).addTo(map);
+        }
+      } else {
+        alert("Could not determine city from location.");
+      }
+    } catch (error) {
+      console.error("Reverse geocoding failed", error);
+      alert("Failed to retrieve location data.");
+    }
+  }, () => {
+    alert("Unable to retrieve your location.");
+  });
+}
