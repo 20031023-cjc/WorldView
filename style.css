@@ -1,0 +1,35 @@
+body {
+  font-family: sans-serif;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(to bottom, #dbeafe, #93c5fd);
+  color: #333;
+  text-align: center;
+}
+
+header {
+  background-color: #1e3a8a;
+  color: white;
+  padding: 1rem;
+}
+
+.language-switch button {
+  margin: 0 5px;
+  padding: 5px 10px;
+  font-weight: bold;
+}
+
+.search-box {
+  margin: 2rem;
+}
+
+#weatherInfo, #cultureInfo {
+  margin: 1.5rem;
+  padding: 1rem;
+  background: white;
+  border-radius: 10px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
