@@ -9,18 +9,14 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-  <!-- 动画库 & 字体 -->
+  <!-- 动画库 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500&display=swap" />
 
-  <!-- 样式 & JS -->
+  <!-- 自定义样式 & 功能脚本 -->
   <link rel="stylesheet" href="style.css" />
   <script defer src="app.js"></script>
 </head>
 <body>
-  <!-- 夜间模式切换按钮 -->
-  <button id="toggleMode">🌓</button>
-
   <header class="animate__animated animate__fadeInDown">
     <h1>🌏 WorldView</h1>
     <div class="language-switch">
@@ -39,30 +35,12 @@
 
     <div id="map" class="animate__animated animate__fadeIn"></div>
 
-    <!-- 翻转卡片结构 -->
-    <div class="card flip-card animate__animated animate__fadeInUp">
-      <div class="flip-card-inner">
-        <div id="weatherInfo" class="flip-card-front"></div>
-        <div id="weatherBack" class="flip-card-back"></div>
-      </div>
-    </div>
-
-    <div class="card flip-card animate__animated animate__fadeInUp">
-      <div class="flip-card-inner">
-        <div id="cultureInfo" class="flip-card-front"></div>
-        <div id="cultureBack" class="flip-card-back"></div>
-      </div>
-    </div>
-
-    <!-- 最近搜索城市展示 -->
-    <div id="recentSearches"></div>
+    <div id="weatherInfo" class="animate__animated animate__fadeInUp"></div>
+    <div id="cultureInfo" class="animate__animated animate__fadeInUp"></div>
   </main>
 
   <footer>
     <p>Made by Cai Jiacheng | Hosted on GitHub</p>
   </footer>
-
-  <!-- 加载中动画 -->
-  <div id="loading" class="loading-spinner hidden"></div>
 </body>
 </html>
