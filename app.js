@@ -59,7 +59,7 @@ async function getWeather() {
   const cultureInfo = document.getElementById("cultureInfo");
 
   if (!city) {
-    weatherInfo.innerHTML = "Please enter a city name.";
+    weatherInfo.innerHTML = i18n.error[currentLang];
     cultureInfo.innerHTML = "";
     return;
   }
@@ -77,7 +77,7 @@ async function getWeather() {
     const countryCode = weatherData.sys.country;
 
     weatherInfo.innerHTML = `
-      <h2>Weather in ${city}</h2>
+      <h2>${i18n.weatherTitle[currentLang]} ${city}</h2>
       <p>🌡 ${temperature}°C, ${condition}</p>
     `;
 
@@ -131,28 +131,27 @@ async function getWeather() {
     };
 
     cultureInfo.innerHTML = `
-      <h3>🌍 Cultural Info: ${countryName}</h3>
+      <h3>🌍 ${i18n.culturalInfo[currentLang]}: ${countryName}</h3>
       <img src="${flag}" alt="Flag of ${countryName}" style="width: 100px; margin: 10px 0;" />
-      <p><strong>Official Language(s):</strong> ${language}</p>
-      <p><strong>Famous Food:</strong> ${culture.food}</p>
-      <p><strong>Greeting:</strong> ${culture.greeting}</p>
-      <p><strong>Etiquette:</strong> ${culture.etiquette}</p>
+      <p><strong>${i18n.languageLabel[currentLang]}</strong> ${language}</p>
+      <p><strong>${i18n.food[currentLang]}</strong> ${culture.food}</p>
+      <p><strong>${i18n.greeting[currentLang]}</strong> ${culture.greeting}</p>
+      <p><strong>${i18n.etiquette[currentLang]}</strong> ${culture.etiquette}</p>
     `;
   } catch (error) {
-    weatherInfo.innerHTML = "⚠️ Could not fetch weather data.";
+    weatherInfo.innerHTML = i18n.error[currentLang];
     cultureInfo.innerHTML = "";
     console.error(error);
   }
 }
 
 // 🌍 初始化地图
-const map = L.map('map').setView([20, 0], 2); // 初始全球视角
+const map = L.map('map').setView([20, 0], 2);
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: 'Map data © OpenStreetMap contributors',
 }).addTo(map);
 
-// 📍 点击地图 → 获取经纬度 → 获取城市名 → 自动查询
 map.on('click', async function (e) {
   const lat = e.latlng.lat;
   const lon = e.latlng.lng;
@@ -170,7 +169,7 @@ map.on('click', async function (e) {
 
     if (city) {
       document.getElementById("cityInput").value = city;
-      getWeather(); // 自动调用天气和文化
+      getWeather();
     } else {
       alert("No city found at this location.");
     }
@@ -178,12 +177,24 @@ map.on('click', async function (e) {
     console.error("Reverse geocoding failed", error);
   }
 });
+
+// 语言切换按钮监听
 document.querySelectorAll(".language-switch button").forEach((btn) => {
   btn.addEventListener("click", () => {
     const lang = btn.getAttribute("data-lang");
     currentLang = lang;
     localStorage.setItem("language", lang);
-    applyTranslations(); // 下一步我们来写这个函数
+    applyTranslations();
   });
 });
 
+// 翻译函数：应用当前语言到页面上
+function applyTranslations() {
+  document.title = i18n.title[currentLang];
+  document.querySelector("h1").textContent = i18n.title[currentLang];
+  document.getElementById("cityInput").placeholder = i18n.inputPlaceholder[currentLang];
+  document.querySelector(".search-box button").textContent = i18n.search[currentLang];
+}
+
+// 页面首次加载时应用语言
+applyTranslations();
