@@ -198,3 +198,36 @@ function applyTranslations() {
 
 // 页面首次加载时应用语言
 applyTranslations();
+async function getLocationWeather() {
+  if (!navigator.geolocation) {
+    alert("Geolocation is not supported by your browser.");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(async (position) => {
+    const lat = position.coords.latitude;
+    const lon = position.coords.longitude;
+
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`
+      );
+      const data = await response.json();
+      const city =
+        data.address.city ||
+        data.address.town ||
+        data.address.village ||
+        data.address.state;
+
+      if (city) {
+        document.getElementById("cityInput").value = city;
+        getWeather();
+      } else {
+        alert("Could not determine your location.");
+      }
+    } catch (error) {
+      console.error("Location fetch failed", error);
+    }
+  });
+}
+
