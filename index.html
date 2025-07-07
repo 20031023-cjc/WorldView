@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WorldView</title>
+  <link rel="stylesheet" href="style.css" />
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <header>
+    <h1>🌏 WorldView</h1>
+    <div class="language-switch">
+      <button data-lang="en">English</button>
+      <button data-lang="zh">中文</button>
+      <button data-lang="ja">日本語</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="search-box">
+      <input type="text" id="cityInput" placeholder="Enter city name" />
+      <button onclick="getWeather()">🔍 Search</button>
+    </div>
+
+    <div id="weatherInfo"></div>
+    <div id="cultureInfo"></div>
+  </main>
+
+  <footer>
+    <p>Made by Cai Jiacheng | Hosted on GitHub</p>
+  </footer>
+</body>
+</html>
