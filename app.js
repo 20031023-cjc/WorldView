@@ -178,3 +178,12 @@ map.on('click', async function (e) {
     console.error("Reverse geocoding failed", error);
   }
 });
+document.querySelectorAll(".language-switch button").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const lang = btn.getAttribute("data-lang");
+    currentLang = lang;
+    localStorage.setItem("language", lang);
+    applyTranslations(); // 下一步我们来写这个函数
+  });
+});
+
