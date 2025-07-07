@@ -4,6 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>WorldView</title>
+
+  <!-- Leaflet 地图样式 & 脚本 -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  ></script>
+
+  <!-- 你自己的样式 & 脚本 -->
   <link rel="stylesheet" href="style.css" />
   <script defer src="app.js"></script>
 </head>
@@ -22,6 +33,9 @@
       <input type="text" id="cityInput" placeholder="Enter city name" />
       <button onclick="getWeather()">🔍 Search</button>
     </div>
+
+    <!-- 地图显示区域 -->
+    <div id="map" style="height: 400px; margin: 20px auto; max-width: 600px;"></div>
 
     <div id="weatherInfo"></div>
     <div id="cultureInfo"></div>
