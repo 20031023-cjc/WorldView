@@ -15,18 +15,21 @@ const i18n = {
   error: { en: "⚠️ Could not fetch weather data.", zh: "⚠️ 无法获取天气信息。", ja: "⚠️ 天気情報を取得できませんでした。" },
 };
 
-const map = L.map("map").setView([20, 0], 2);
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  attribution: "Map data © OpenStreetMap contributors",
+// 地图初始化
+const map = L.map('map').setView([20, 0], 2);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: 'Map data © OpenStreetMap contributors',
 }).addTo(map);
 
-map.on("click", async (e) => {
+map.on('click', async (e) => {
   const lat = e.latlng.lat;
   const lon = e.latlng.lng;
+
   try {
     const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`);
     const data = await res.json();
     const city = data.address.city || data.address.town || data.address.village || data.address.state;
+
     if (city) {
       document.getElementById("cityInput").value = city;
       getWeather(city, lat, lon);
@@ -50,9 +53,6 @@ async function getWeather(city = null, lat = null, lon = null) {
     return;
   }
 
-  showLoading();
-  saveSearch(city);
-
   const apiKey = "d0c82cf6ceae567537e0079215ab67dd";
   const url = lat && lon
     ? `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`
@@ -75,17 +75,9 @@ async function getWeather(city = null, lat = null, lon = null) {
     L.marker([latUsed, lonUsed]).addTo(map);
 
     weatherInfo.innerHTML = `
-      <div class="flip-card-inner">
-        <div class="flip-card-front">
-          <h2>${i18n.weatherTitle[currentLang]} ${city}</h2>
-          <img src="${iconUrl}" alt="${condition}" />
-          <p>🌡 ${temperature}°C, ${condition}</p>
-          <p>📌 Latitude: ${latUsed.toFixed(2)}, Longitude: ${lonUsed.toFixed(2)}</p>
-        </div>
-        <div class="flip-card-back">
-          <p>Detailed weather info can go here.</p>
-        </div>
-      </div>
+      <h2>${i18n.weatherTitle[currentLang]} ${city}</h2>
+      <img src="${iconUrl}" alt="${condition}" />
+      <p>🌡 ${temperature}°C, ${condition}</p>
     `;
 
     const countryRes = await fetch(`https://restcountries.com/v3.1/alpha/${countryCode}`);
@@ -107,25 +99,17 @@ async function getWeather(city = null, lat = null, lon = null) {
     const culture = cultureTemplates[countryCode] || { food: "N/A", greeting: "N/A", etiquette: "N/A" };
 
     cultureInfo.innerHTML = `
-      <div class="flip-card-inner">
-        <div class="flip-card-front">
-          <h3>🌍 ${i18n.culturalInfo[currentLang]}: ${countryName}</h3>
-          <img src="${flag}" alt="Flag of ${countryName}" style="width: 100px; margin: 10px 0;" />
-          <p><strong>${i18n.languageLabel[currentLang]}</strong> ${language}</p>
-        </div>
-        <div class="flip-card-back">
-          <p><strong>${i18n.food[currentLang]}</strong> ${culture.food}</p>
-          <p><strong>${i18n.greeting[currentLang]}</strong> ${culture.greeting}</p>
-          <p><strong>${i18n.etiquette[currentLang]}</strong> ${culture.etiquette}</p>
-        </div>
-      </div>
+      <h3>🌍 ${i18n.culturalInfo[currentLang]}: ${countryName}</h3>
+      <img src="${flag}" alt="Flag of ${countryName}" style="width: 100px; margin: 10px 0;" />
+      <p><strong>${i18n.languageLabel[currentLang]}</strong> ${language}</p>
+      <p><strong>${i18n.food[currentLang]}</strong> ${culture.food}</p>
+      <p><strong>${i18n.greeting[currentLang]}</strong> ${culture.greeting}</p>
+      <p><strong>${i18n.etiquette[currentLang]}</strong> ${culture.etiquette}</p>
     `;
   } catch (err) {
     weatherInfo.innerHTML = i18n.error[currentLang];
     cultureInfo.innerHTML = "";
     console.error(err);
-  } finally {
-    hideLoading();
   }
 }
 
@@ -138,10 +122,12 @@ function getLocationWeather() {
   navigator.geolocation.getCurrentPosition(async (position) => {
     const lat = position.coords.latitude;
     const lon = position.coords.longitude;
+
     try {
       const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`);
       const data = await res.json();
       const city = data.address.city || data.address.town || data.address.village || data.address.state;
+
       if (city) {
         document.getElementById("cityInput").value = city;
         getWeather(city, lat, lon);
@@ -156,6 +142,7 @@ function getLocationWeather() {
   });
 }
 
+// 语言按钮事件 + 高亮
 function highlightActiveLanguage() {
   document.querySelectorAll(".language-switch button").forEach((btn) => {
     btn.classList.toggle("active", btn.getAttribute("data-lang") === currentLang);
@@ -179,6 +166,8 @@ function applyTranslations() {
   buttons[0].textContent = `🔍 ${i18n.search[currentLang]}`;
   buttons[1].textContent = i18n.useLocation[currentLang];
   highlightActiveLanguage();
+
+  // 自动刷新当前结果
   if (document.getElementById("weatherInfo").innerHTML) {
     const city = document.getElementById("cityInput").value;
     getWeather(city);
@@ -186,47 +175,3 @@ function applyTranslations() {
 }
 
 applyTranslations();
-renderSearchHistory();
-
-document.getElementById("toggleMode").addEventListener("click", () => {
-  document.body.classList.toggle("dark");
-});
-
-function showLoading() {
-  document.getElementById("loading").classList.remove("hidden");
-}
-function hideLoading() {
-  document.getElementById("loading").classList.add("hidden");
-}
-
-function saveSearch(cityName) {
-  let history = JSON.parse(localStorage.getItem("searchHistory") || "[]");
-  history = [cityName, ...history.filter(c => c !== cityName)];
-  if (history.length > 5) history.length = 5;
-  localStorage.setItem("searchHistory", JSON.stringify(history));
-  renderSearchHistory();
-}
-
-function renderSearchHistory() {
-  const container = document.getElementById("recentSearches");
-  if (!container) return;
-  const history = JSON.parse(localStorage.getItem("searchHistory") || "[]");
-  if (history.length === 0) {
-    container.innerHTML = "";
-    return;
-  }
-  container.innerHTML = `<h3>🔁 Recent Searches</h3>`;
-  const ul = document.createElement("ul");
-  ul.style.listStyle = "none";
-  ul.style.padding = 0;
-  history.forEach(city => {
-    const li = document.createElement("li");
-    li.innerHTML = `<button class="history-btn">${city}</button>`;
-    li.querySelector("button").onclick = () => {
-      document.getElementById("cityInput").value = city;
-      getWeather(city);
-    };
-    ul.appendChild(li);
-  });
-  container.appendChild(ul);
-}
