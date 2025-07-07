@@ -89,3 +89,37 @@ async function getWeather() {
     console.error(error);
   }
 }
+
+// 🌍 初始化地图
+const map = L.map('map').setView([20, 0], 2); // 初始全球视角
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: 'Map data © OpenStreetMap contributors',
+}).addTo(map);
+
+// 📍 点击地图 → 获取经纬度 → 获取城市名 → 自动查询
+map.on('click', async function (e) {
+  const lat = e.latlng.lat;
+  const lon = e.latlng.lng;
+
+  try {
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`
+    );
+    const data = await response.json();
+    const city =
+      data.address.city ||
+      data.address.town ||
+      data.address.village ||
+      data.address.state;
+
+    if (city) {
+      document.getElementById("cityInput").value = city;
+      getWeather(); // 自动调用天气和文化
+    } else {
+      alert("No city found at this location.");
+    }
+  } catch (error) {
+    console.error("Reverse geocoding failed", error);
+  }
+});
