@@ -1,167 +1,147 @@
 body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
   padding: 0;
-  font-family: 'Quicksand', sans-serif;
-  background: url('https://cdn.pixabay.com/photo/2017/08/30/07/52/stars-2695569_1280.jpg') no-repeat center center fixed;
-  background-size: cover;
-  color: #ffffff;
+  background: linear-gradient(to bottom, #fdf6ec, #faeee7);
+  color: #4b2e1e;
   text-align: center;
-  transition: background 0.6s ease, color 0.4s ease;
 }
 
-/* 夜间模式 */
-body.dark {
-  background: #0b0c2a;
-  color: #e0e7ff;
+header {
+  background: linear-gradient(to right, #f3d5b5, #e7bb94);
+  color: #4b2e1e;
+  padding: 1.5rem 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* 夜间切换按钮 */
-#toggleMode {
-  position: fixed;
-  top: 15px;
-  right: 15px;
-  z-index: 999;
-  background-color: #ffffffaa;
-  color: #000;
+header h1 {
+  margin: 0;
+  font-size: 2rem;
+  letter-spacing: 1px;
+}
+
+.language-switch {
+  margin-top: 1rem;
+}
+
+.language-switch button {
+  margin: 0 5px;
+  padding: 8px 16px;
+  font-weight: bold;
   border: none;
-  border-radius: 30px;
-  padding: 8px 14px;
-  font-size: 18px;
+  border-radius: 8px;
+  background-color: #f1c27b;
+  color: #fffaf5;
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-  transition: background-color 0.3s ease;
-}
-#toggleMode:hover {
-  background-color: #fff;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
 }
 
-/* 通用按钮样式 */
-button {
-  font-family: inherit;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
+.language-switch button:hover {
+  background-color: #e0a96d;
+  transform: scale(1.05);
 }
 
-.language-switch button,
-.search-box button,
-.history-btn {
-  background: #3b82f6;
-  color: #fff;
-  border: none;
-  padding: 10px 16px;
-  margin: 4px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-}
-.language-switch button:hover,
-.search-box button:hover,
-.history-btn:hover {
-  background: #2563eb;
-  transform: translateY(-2px);
-}
-
-/* 搜索框 */
 .search-box {
   margin: 2rem auto;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  align-items: center;
   gap: 10px;
 }
+
 .search-box input[type="text"] {
-  padding: 10px 16px;
-  border: 1px solid #ccc;
-  border-radius: 12px;
-  width: 250px;
+  padding: 10px 14px;
   font-size: 1rem;
-  transition: box-shadow 0.3s ease;
-}
-.search-box input[type="text"]:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px #60a5fa;
+  border: 1px solid #ddd0c8;
+  border-radius: 8px;
+  width: 250px;
+  max-width: 80%;
+  background-color: #fffaf5;
+  transition: box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
-/* 地图样式 */
+.search-box input[type="text"]:focus {
+  outline: none;
+  background-color: #fff3e6;
+  box-shadow: 0 0 0 3px #ffd7b5;
+}
+
+.search-box button {
+  padding: 10px 16px;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  background-color: #f5c89c;
+  color: #4b2e1e;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+
+.search-box button:hover {
+  background-color: #f1b97e;
+  transform: scale(1.05);
+}
+
 #map {
   height: 420px;
   margin: 30px auto;
   max-width: 680px;
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 4px 18px rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.2);
 }
 
-/* 毛玻璃卡片 */
-.card {
-  max-width: 680px;
+#weatherInfo,
+#cultureInfo {
   margin: 2rem auto;
   padding: 1.8rem;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 20px;
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.25);
+  background: #fffefc;
+  border-radius: 16px;
+  max-width: 680px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
   text-align: left;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  color: #fff;
-}
-.card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+  line-height: 1.7;
+  font-size: 1rem;
+  color: #4b2e1e;
 }
 
-.card h2, .card h3 {
-  color: #facc15;
-  margin-top: 0;
+#weatherInfo h2,
+#cultureInfo h3 {
+  color: #b45f06;
 }
 
-/* 搜索历史容器 */
-#recentSearches {
-  margin-top: 1.5rem;
-}
-#recentSearches h3 {
-  font-size: 1.2rem;
-  color: #fcd34d;
-}
-.history-btn {
-  background-color: #6366f1;
-  margin: 6px;
+footer {
+  margin-top: 3rem;
+  padding: 1rem;
+  background: #f9f1e7;
+  color: #7c5c4b;
+  font-size: 0.9rem;
 }
 
-/* 加载动画 */
-#loading {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  width: 50px;
-  height: 50px;
-  margin: -25px 0 0 -25px;
-  border: 6px solid #f3f3f3;
-  border-top: 6px solid #facc15;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  z-index: 1000;
-}
-.hidden {
-  display: none;
-}
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-/* 响应式适配 */
+/* 小屏适配 */
 @media screen and (max-width: 600px) {
+  #map,
+  #weatherInfo,
+  #cultureInfo {
+    width: 92%;
+  }
+
   .search-box {
     flex-direction: column;
     gap: 12px;
   }
-  .search-box input,
+
+  .search-box input[type="text"],
   .search-box button {
     width: 90%;
+    max-width: 320px;
   }
-  .card, #map {
-    width: 92%;
+
+  .language-switch button {
+    margin-bottom: 0.5rem;
   }
 }
