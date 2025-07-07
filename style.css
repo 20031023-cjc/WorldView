@@ -15,21 +15,83 @@ header {
 
 .language-switch button {
   margin: 0 5px;
-  padding: 5px 10px;
+  padding: 6px 12px;
   font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  background-color: #3b82f6;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.language-switch button:hover {
+  background-color: #2563eb;
 }
 
 .search-box {
   margin: 2rem;
 }
 
+.search-box input[type="text"] {
+  padding: 8px 12px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  width: 250px;
+  max-width: 80%;
+}
+
+.search-box button {
+  padding: 8px 14px;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  background-color: #3b82f6;
+  color: white;
+  margin-left: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.search-box button:hover {
+  background-color: #2563eb;
+}
+
+#map {
+  height: 400px;
+  margin: 20px auto;
+  max-width: 600px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
 #weatherInfo, #cultureInfo {
-  margin: 1.5rem;
+  margin: 1.5rem auto;
   padding: 1rem;
   background: white;
   border-radius: 10px;
   max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: left;
+}
+
+/* 小屏适配 */
+@media screen and (max-width: 600px) {
+  #map,
+  #weatherInfo,
+  #cultureInfo {
+    width: 90%;
+  }
+
+  .search-box input[type="text"] {
+    width: 80%;
+    margin-bottom: 1rem;
+  }
+
+  .search-box button {
+    display: block;
+    margin: 0.5rem auto 0;
+  }
 }
