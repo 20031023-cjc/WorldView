@@ -1,44 +1,76 @@
-async function getWeather(cityName = null, lat = null, lon = null) {
-  const weatherInfo = document.getElementById("weatherInfo");
-  const cultureInfo = document.getElementById("cultureInfo");
-  let city = cityName;
+let currentLang = localStorage.getItem("language") || "en";
+
+const i18n = {
+  title: { en: "WorldView", zh: "世界视图", ja: "ワールドビュー" },
+  inputPlaceholder: { en: "Enter city name", zh: "输入城市名称", ja: "都市名を入力" },
+  search: { en: "Search", zh: "搜索", ja: "検索" },
+  useLocation: { en: "📍 Use My Location", zh: "📍 使用当前位置", ja: "📍 現在地を使う" },
+  weatherTitle: { en: "Weather in", zh: "天气：", ja: "天気：" },
+  culturalInfo: { en: "Cultural Info", zh: "文化信息", ja: "文化情報" },
+  languageLabel: { en: "Official Language(s):", zh: "官方语言：", ja: "公用語：" },
+  food: { en: "Famous Food:", zh: "代表食物：", ja: "名物料理：" },
+  greeting: { en: "Greeting:", zh: "问候语：", ja: "あいさつ：" },
+  etiquette: { en: "Etiquette:", zh: "礼仪：", ja: "マナー：" },
+  error: { en: "⚠️ Could not fetch weather data.", zh: "⚠️ 无法获取天气信息。", ja: "⚠️ 天気情報を取得できませんでした。" },
+};
+
+const map = L.map('map').setView([20, 0], 2);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: 'Map data © OpenStreetMap contributors',
+}).addTo(map);
+
+map.on('click', async (e) => {
+  const lat = e.latlng.lat;
+  const lon = e.latlng.lng;
 
   try {
-    // 如果没有 city，就用 lat/lon 反查 city 名称
-    if (!city && lat !== null && lon !== null) {
-      const reverseRes = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`
-      );
-      const reverseData = await reverseRes.json();
-      city = reverseData.address.city || reverseData.address.town || reverseData.address.village || reverseData.address.state;
+    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`);
+    const data = await response.json();
+    const city = data.address.city || data.address.town || data.address.village || data.address.state;
+
+    if (city) {
+      document.getElementById("cityInput").value = city;
+      getWeather(city, lat, lon);
+    } else {
+      alert("No city found at this location.");
     }
+  } catch (error) {
+    console.error("Reverse geocoding failed", error);
+  }
+});
 
-    if (!city) {
-      weatherInfo.innerHTML = i18n.error[currentLang];
-      cultureInfo.innerHTML = "";
-      return;
-    }
+async function getWeather(city = null, lat = null, lon = null) {
+  const cityInput = document.getElementById("cityInput");
+  const weatherInfo = document.getElementById("weatherInfo");
+  const cultureInfo = document.getElementById("cultureInfo");
 
-    document.getElementById("cityInput").value = city;
+  city = city || cityInput.value;
+  if (!city) {
+    weatherInfo.innerHTML = i18n.error[currentLang];
+    cultureInfo.innerHTML = "";
+    return;
+  }
 
-    const apiKey = "d0c82cf6ceae567537e0079215ab67dd";
-    const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&units=metric&appid=${apiKey}`;
-    const weatherResponse = await fetch(weatherUrl);
-    if (!weatherResponse.ok) throw new Error("City not found");
+  const apiKey = "d0c82cf6ceae567537e0079215ab67dd";
+  const url = lat && lon
+    ? `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`
+    : `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&units=metric&appid=${apiKey}`;
 
-    const weatherData = await weatherResponse.json();
-    const temperature = weatherData.main.temp;
-    const condition = weatherData.weather[0].description;
-    const countryCode = weatherData.sys.country;
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("City not found");
+    const data = await res.json();
 
-    // 🗺️ 自动跳转地图
-    if (lat === null || lon === null) {
-      lat = weatherData.coord.lat;
-      lon = weatherData.coord.lon;
-    }
+    const temperature = data.main.temp;
+    const condition = data.weather[0].description;
+    const countryCode = data.sys.country;
+    const latUsed = data.coord.lat;
+    const lonUsed = data.coord.lon;
+
+    // 地图跳转 + 标记
     if (typeof map !== "undefined") {
-      map.setView([lat, lon], 8);
-      L.marker([lat, lon]).addTo(map);
+      map.setView([latUsed, lonUsed], 8);
+      L.marker([latUsed, lonUsed]).addTo(map);
     }
 
     weatherInfo.innerHTML = `
@@ -46,9 +78,8 @@ async function getWeather(cityName = null, lat = null, lon = null) {
       <p>🌡 ${temperature}°C, ${condition}</p>
     `;
 
-    const countryUrl = `https://restcountries.com/v3.1/alpha/${countryCode}`;
-    const countryResponse = await fetch(countryUrl);
-    const countryData = await countryResponse.json();
+    const countryRes = await fetch(`https://restcountries.com/v3.1/alpha/${countryCode}`);
+    const countryData = await countryRes.json();
     const country = countryData[0];
     const flag = country.flags.svg;
     const language = Object.values(country.languages).join(", ");
@@ -63,11 +94,7 @@ async function getWeather(cityName = null, lat = null, lon = null) {
       TH: { food: "Pad Thai 🍜", greeting: "สวัสดีครับ/ค่ะ", etiquette: "Wai greeting 🙏" },
     };
 
-    const culture = cultureTemplates[countryCode] || {
-      food: "N/A",
-      greeting: "N/A",
-      etiquette: "N/A",
-    };
+    const culture = cultureTemplates[countryCode] || { food: "N/A", greeting: "N/A", etiquette: "N/A" };
 
     cultureInfo.innerHTML = `
       <h3>🌍 ${i18n.culturalInfo[currentLang]}: ${countryName}</h3>
@@ -77,14 +104,14 @@ async function getWeather(cityName = null, lat = null, lon = null) {
       <p><strong>${i18n.greeting[currentLang]}</strong> ${culture.greeting}</p>
       <p><strong>${i18n.etiquette[currentLang]}</strong> ${culture.etiquette}</p>
     `;
-  } catch (error) {
+  } catch (err) {
     weatherInfo.innerHTML = i18n.error[currentLang];
     cultureInfo.innerHTML = "";
-    console.error(error);
+    console.error(err);
   }
 }
 
-async function getLocationWeather() {
+function getLocationWeather() {
   if (!navigator.geolocation) {
     alert("Geolocation is not supported by your browser.");
     return;
@@ -93,8 +120,42 @@ async function getLocationWeather() {
   navigator.geolocation.getCurrentPosition(async (position) => {
     const lat = position.coords.latitude;
     const lon = position.coords.longitude;
-    await getWeather(null, lat, lon);
+
+    try {
+      const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`);
+      const data = await response.json();
+      const city = data.address.city || data.address.town || data.address.village || data.address.state;
+
+      if (city) {
+        document.getElementById("cityInput").value = city;
+        getWeather(city, lat, lon);
+      } else {
+        alert("Could not determine city from location.");
+      }
+    } catch (error) {
+      console.error("Location fetch failed", error);
+    }
   }, () => {
     alert("Unable to retrieve your location.");
   });
 }
+
+document.querySelectorAll(".language-switch button").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const lang = btn.getAttribute("data-lang");
+    currentLang = lang;
+    localStorage.setItem("language", lang);
+    applyTranslations();
+  });
+});
+
+function applyTranslations() {
+  document.title = i18n.title[currentLang];
+  document.querySelector("h1").textContent = i18n.title[currentLang];
+  document.getElementById("cityInput").placeholder = i18n.inputPlaceholder[currentLang];
+  const buttons = document.querySelectorAll(".search-box button");
+  buttons[0].textContent = `🔍 ${i18n.search[currentLang]}`;
+  buttons[1].textContent = i18n.useLocation[currentLang];
+}
+
+applyTranslations();
