@@ -19,7 +19,7 @@
 </head>
 <body>
   <!-- 夜间模式切换按钮 -->
-  <button id="toggleMode">🌓</button>
+  <button id="toggleMode">🌃</button>
 
   <header class="animate__animated animate__fadeInDown">
     <h1>🌏 WorldView</h1>
@@ -40,8 +40,19 @@
     <div id="map" class="animate__animated animate__fadeIn"></div>
 
     <!-- 翻转卡片结构容器 -->
-    <div id="weatherInfo" class="card flip-card animate__animated animate__fadeInUp"></div>
-    <div id="cultureInfo" class="card flip-card animate__animated animate__fadeInUp"></div>
+    <div class="card flip-card animate__animated animate__fadeInUp">
+      <div class="flip-card-inner">
+        <div id="weatherInfo" class="flip-card-front"></div>
+        <div class="flip-card-back">Click to see more details</div>
+      </div>
+    </div>
+
+    <div class="card flip-card animate__animated animate__fadeInUp">
+      <div class="flip-card-inner">
+        <div id="cultureInfo" class="flip-card-front"></div>
+        <div class="flip-card-back">Explore cultural info</div>
+      </div>
+    </div>
 
     <!-- 最近搜索城市展示 -->
     <div id="recentSearches"></div>
